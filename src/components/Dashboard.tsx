@@ -1,31 +1,26 @@
+"use client";
+
+import { useCart } from "@/context/CartContext";
 import Link from "next/link";
 
 export function Dashboard() {
+  const { addToCart } = useCart();
+
   const mostOrdered = [
     {
       id: 1,
       name: "Cheese Burger",
-      price: "R$ 18,00",
+      price: 18.0,
       image: "/burgers/cheese.webp",
     },
-    {
-      id: 2,
-      name: "Bacon Burger",
-      price: "R$ 22,00",
-      image: "/burgers/bacon.jpg",
-    },
+    { id: 2, name: "Bacon Burger", price: 22.0, image: "/burgers/bacon.jpg" },
     {
       id: 3,
       name: "Double Cheese",
-      price: "R$ 20,00",
+      price: 20.0,
       image: "/burgers/dbcheese.jpg",
     },
-    {
-      id: 4,
-      name: "Smash Burger",
-      price: "R$ 18,00",
-      image: "/burgers/smash.jpg",
-    },
+    { id: 4, name: "Smash Burger", price: 18.0, image: "/burgers/smash.jpg" },
   ];
 
   return (
@@ -37,20 +32,27 @@ export function Dashboard() {
       <div className="pt-10">
         <h1 className="font-bold text-lg">Os mais pedidos</h1>
 
-        {/* Grid de produtos */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
           {mostOrdered.map((item) => (
-            <Link key={item.id} href={`/burger/${item.id}`}>
-              <div className="bg-gray-100 p-1 rounded-lg cursor-pointer hover:scale-105 transition-transform">
+            <div key={item.id} className="bg-gray-100 p-2 rounded-lg">
+              <Link href={`/burger/${item.id}`}>
                 <img
                   src={item.image}
                   alt={item.name}
-                  className="w-full h-36 object-contain rounded-md"
+                  className="w-full h-36 object-cover rounded-md"
                 />
-                <p className="text-sm font-semibold mt-2">{item.name}</p>
-                <p className="text-xs text-gray-600">{item.price}</p>
-              </div>
-            </Link>
+              </Link>
+              <p className="text-sm font-semibold mt-2">{item.name}</p>
+              <p className="text-xs text-gray-600">
+                R$ {item.price.toFixed(2)}
+              </p>
+              <button
+                onClick={() => addToCart({ ...item, quantity: 1 })}
+                className="mt-2 w-full py-1 bg-blue-500 text-white rounded-md"
+              >
+                Adicionar ao Carrinho
+              </button>
+            </div>
           ))}
         </div>
       </div>
