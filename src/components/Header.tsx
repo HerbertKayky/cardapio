@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { CiSearch, CiShare2 } from "react-icons/ci";
 import { IoClose } from "react-icons/io5";
+import { Cart } from "./Cart";
 
 export function Header() {
   const [isSearching, setIsSearching] = useState(false);
@@ -43,6 +44,8 @@ export function Header() {
           )}
         </div>
       </div>
+      <Cart />
     </header>
+
   );
 }
