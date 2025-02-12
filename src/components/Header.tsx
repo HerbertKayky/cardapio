@@ -3,6 +3,7 @@ import { useState } from "react";
 import { CiSearch, CiShare2 } from "react-icons/ci";
 import { IoClose } from "react-icons/io5";
 import { Cart } from "./Cart";
+import Link from "next/link";
 
 export function Header() {
   const [isSearching, setIsSearching] = useState(false);
@@ -14,7 +15,9 @@ export function Header() {
   return (
     <header className="flex items-center justify-center py-3 bg-[#3D3D3D] border-b">
       <div className="flex items-center justify-between w-full max-w-5xl text-white">
-        <h1 className="font-bold">Hamburgueria</h1>
+        <Link href="/" className="font-bold">
+          Hamburgueria
+        </Link>
 
         <div className="flex gap-2">
           {isSearching ? (
@@ -46,6 +49,5 @@ export function Header() {
       </div>
       <Cart />
     </header>
-
   );
 }
