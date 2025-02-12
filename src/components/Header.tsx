@@ -13,7 +13,7 @@ export function Header() {
   };
 
   return (
-    <header className="flex items-center justify-center py-3 bg-[#3D3D3D] border-b">
+    <header className="flex items-center justify-center py-3 bg-[#3D3D3D] border-b gap-2">
       <div className="flex items-center justify-between w-full max-w-5xl text-white">
         <Link href="/" className="font-bold">
           Hamburgueria
