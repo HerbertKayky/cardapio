@@ -27,7 +27,7 @@ export default function CartPage() {
                 <img src={item.image} alt={item.name} className="w-16 h-16 rounded-md object-cover" />
                 <div>
                   <p className="font-semibold">{item.name}</p>
-                  <p className="text-sm text-gray-600">R$ {item.price.toFixed(2)} x {item.quantity}</p>
+                  <p className="text-sm text-gray-600">R$ {item.price.toFixed(2)} x {item.quantity} Un</p>
                   <div className="flex items-center gap-2 mt-1">
                     <button
                       onClick={() => decreaseQuantity(item.id)}
