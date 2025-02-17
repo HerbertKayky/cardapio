@@ -1,6 +1,7 @@
 "use client";
 
 import { useCart } from "@/context/CartContext";
+import Image from "next/image";
 import Link from "next/link";
 
 export function Dashboard() {
@@ -10,17 +11,31 @@ export function Dashboard() {
     {
       id: 1,
       name: "Cheese Burger",
+      description: "Pão brioche, carne 150g, queijo cheddar e molho especial.",
       price: 18.0,
       image: "/burgers/cheese.webp",
     },
-    { id: 2, name: "Bacon Burger", price: 22.0, image: "/burgers/bacon.jpg" },
+    {
+      id: 2,
+      name: "Bacon Burger",
+      description: "Pão brioche, carne 150g, bacon crocante e cheddar.",
+      price: 22.0,
+      image: "/burgers/bacon.jpg",
+    },
     {
       id: 3,
       name: "Double Cheese",
+      description: "Pão brioche, carne dupla, queijo cheddar e molho especial.",
       price: 20.0,
       image: "/burgers/dbcheese.jpg",
     },
-    { id: 4, name: "Smash Burger", price: 18.0, image: "/burgers/smash.jpg" },
+    {
+      id: 4,
+      name: "Smash Burger",
+      description: "Pão brioche, carne smash, cebola caramelizada e queijo.",
+      price: 18.0,
+      image: "/burgers/smash.jpg",
+    },
   ];
 
   return (
@@ -36,7 +51,9 @@ export function Dashboard() {
           {mostOrdered.map((item) => (
             <div key={item.id} className="bg-gray-100 p-2 rounded-lg">
               <Link href={`/burger/${item.id}`}>
-                <img
+                <Image
+                  width={1000}
+                  height={1000}
                   src={item.image}
                   alt={item.name}
                   className="w-full h-36 object-cover rounded-md"
@@ -52,6 +69,37 @@ export function Dashboard() {
               >
                 Adicionar ao Carrinho
               </button>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="pt-10">
+        <h1 className="font-bold text-lg">Burgers Artesanais</h1>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          {mostOrdered.map((item) => (
+            <div
+              key={item.id}
+              className="flex border-gray-300 border p-2 rounded-lg"
+            >
+              <Link href={`/burger/${item.id}`}>
+                <Image
+                  width={1000}
+                  height={1000}
+                  src={item.image}
+                  alt={item.name}
+                  className="w-full h-28 object-contain rounded-md"
+                />
+              </Link>
+              <div className="flex flex-col gap-2 p-4">
+                <h1 className=" font-semibold mt-2">{item.name}</h1>
+                <p className=" text-gray-600">
+                  {item.description}
+                </p>
+                <p className="font-bold text-gray-600">
+                  R$ {item.price.toFixed(2)}
+                </p>
+              </div>
             </div>
           ))}
         </div>
