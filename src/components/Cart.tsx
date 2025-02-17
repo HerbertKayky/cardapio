@@ -12,7 +12,7 @@ export function Cart() {
     <Link href="/cart" className="relative flex items-center top-[2px]">
       <FiShoppingCart size={22} className="text-white" />
       {totalItems > 0 && (
-        <span className="absolute -top-3 -right-3 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+        <span className="absolute -top-3 -right-3 bg-gray-400 text-black font-bold text-xs px-2 py-1 rounded-full">
           {totalItems}
         </span>
       )}
