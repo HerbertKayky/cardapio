@@ -76,30 +76,29 @@ export function Dashboard() {
       <div className="pt-10">
         <h1 className="font-bold text-lg">Burgers Artesanais</h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
           {mostOrdered.map((item) => (
             <div
               key={item.id}
-              className="flex border-gray-300 border p-2 rounded-lg"
+              className="flex border-gray-300 border rounded-lg"
             >
-              <Link href={`/burger/${item.id}`}>
+              <Link className="flex items-center" href={`/burger/${item.id}` }>
                 <Image
                   width={1000}
                   height={1000}
                   src={item.image}
                   alt={item.name}
-                  className="w-full h-28 object-contain rounded-md"
+                  className="w-full h-36 object-contain rounded-md"
                 />
+
+                <div className="flex flex-col gap-2 p-4">
+                  <h1 className=" font-semibold mt-2">{item.name}</h1>
+                  <p className=" text-gray-600">{item.description}</p>
+                  <p className="font-bold text-gray-600">
+                    R$ {item.price.toFixed(2)}
+                  </p>
+                </div>
               </Link>
-              <div className="flex flex-col gap-2 p-4">
-                <h1 className=" font-semibold mt-2">{item.name}</h1>
-                <p className=" text-gray-600">
-                  {item.description}
-                </p>
-                <p className="font-bold text-gray-600">
-                  R$ {item.price.toFixed(2)}
-                </p>
-              </div>
             </div>
           ))}
         </div>
