@@ -2,9 +2,11 @@
 
 import { useCart } from "@/context/CartContext";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function CartPage() {
   const { cart, removeFromCart, clearCart, increaseQuantity, decreaseQuantity } = useCart();
+  const router = useRouter();
 
   const totalPrice = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
@@ -56,6 +58,12 @@ export default function CartPage() {
           <div className="mt-4 text-right font-bold text-lg">
             Total: R$ {totalPrice.toFixed(2)}
           </div>
+          <button
+            onClick={() => router.push("/checkout")}
+            className="mt-4 px-4 py-2 bg-green-500 text-white rounded-md w-full"
+          >
+            Prosseguir com o Pedido
+          </button>
           <button
             onClick={clearCart}
             className="mt-4 px-4 py-2 bg-gray-800 text-white rounded-md w-full"
