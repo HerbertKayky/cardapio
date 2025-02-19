@@ -8,3 +8,5 @@ async function getProducts() {
 }
 
 getProducts();
+
+export default prisma;
