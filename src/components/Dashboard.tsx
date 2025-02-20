@@ -1,42 +1,30 @@
 "use client";
 
 import { useCart } from "@/context/CartContext";
+import { Burger } from "@/utils/types";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export function Dashboard() {
   const { addToCart } = useCart();
+  const [burgers, setBurgers] = useState<Burger[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const mostOrdered = [
-    {
-      id: 1,
-      name: "Cheese Burger",
-      description: "Pão brioche, carne 150g, queijo cheddar e molho especial.",
-      price: 18.0,
-      image: "/burgers/cheese.webp",
-    },
-    {
-      id: 2,
-      name: "Bacon Burger",
-      description: "Pão brioche, carne 150g, bacon crocante e cheddar.",
-      price: 22.0,
-      image: "/burgers/bacon.jpg",
-    },
-    {
-      id: 3,
-      name: "Double Cheese",
-      description: "Pão brioche, carne dupla, queijo cheddar e molho especial.",
-      price: 20.0,
-      image: "/burgers/dbcheese.jpg",
-    },
-    {
-      id: 4,
-      name: "Smash Burger",
-      description: "Pão brioche, carne smash, cebola caramelizada e queijo.",
-      price: 18.0,
-      image: "/burgers/smash.jpg",
-    },
-  ];
+  useEffect(() => {
+    fetchBurgers();
+  }, []);
+
+  async function fetchBurgers() {
+    const res = await fetch("/api/burgers");
+    const data = await res.json();
+    setBurgers(data);
+    setLoading(false);
+  }
+
+  if (loading) {
+    return <div>Carregando...</div>;
+  }
 
   return (
     <div className="py-4">
@@ -48,23 +36,21 @@ export function Dashboard() {
         <h1 className="font-bold text-lg">Os mais pedidos</h1>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-          {mostOrdered.map((item) => (
+          {burgers.map((item) => (
             <div key={item.id} className="bg-gray-100 p-2 rounded-lg">
-              <Link href={`/burger/${item.id}`}>
+              <Link href={`/burgers/${item.id}`}>
                 <Image
                   width={1000}
                   height={1000}
-                  src={item.image}
+                  src={item.image || ""}
                   alt={item.name}
                   className="w-full h-36 object-cover rounded-md"
                 />
               </Link>
               <p className="text-sm font-semibold mt-2">{item.name}</p>
-              <p className="text-xs text-gray-600">
-                R$ {item.price.toFixed(2)}
-              </p>
+              <p className="text-xs text-gray-600">R$ {item.price}</p>
               <button
-                onClick={() => addToCart({ ...item, quantity: 1 })}
+                onClick={() => addToCart({ ...item, id: item.id, quantity: 1 })}
                 className="mt-2 w-full py-1 bg-blue-500 text-white rounded-md"
               >
                 Adicionar ao Carrinho
@@ -73,20 +59,21 @@ export function Dashboard() {
           ))}
         </div>
       </div>
+
       <div className="pt-10">
         <h1 className="font-bold text-lg">Burgers Artesanais</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
-          {mostOrdered.map((item) => (
+          {burgers.map((item) => (
             <div
               key={item.id}
               className="flex border-gray-300 border rounded-lg"
             >
-              <Link className="flex items-center" href={`/burger/${item.id}` }>
+              <Link className="flex items-center" href={`/burgers/${item.id}`}>
                 <Image
                   width={1000}
                   height={1000}
-                  src={item.image}
+                  src={item.image || ""}
                   alt={item.name}
                   className="w-full h-36 object-contain rounded-md"
                 />
@@ -94,9 +81,7 @@ export function Dashboard() {
                 <div className="flex flex-col gap-2 p-4">
                   <h1 className=" font-semibold mt-2">{item.name}</h1>
                   <p className=" text-gray-600">{item.description}</p>
-                  <p className="font-bold text-gray-600">
-                    R$ {item.price.toFixed(2)}
-                  </p>
+                  <p className="font-bold text-gray-600">R$ {item.price}</p>
                 </div>
               </Link>
             </div>
