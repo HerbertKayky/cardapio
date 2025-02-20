@@ -4,7 +4,6 @@ import { useCart } from "@/context/CartContext";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 export default function CartPage() {
   const {
@@ -13,10 +12,11 @@ export default function CartPage() {
     clearCart,
     increaseQuantity,
     decreaseQuantity,
+    observation,
+    setObservation,
   } = useCart();
-  const router = useRouter();
 
-  const [observation, setObservation] = useState("");
+  const router = useRouter();
 
   const totalPrice = cart.reduce(
     (acc, item) => acc + item.price * item.quantity,
