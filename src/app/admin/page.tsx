@@ -1,0 +1,146 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { z } from "zod";
+import { Burger } from "@/utils/types";
+
+const burgerSchema = z.object({
+  name: z.string().min(1, "O nome é obrigatório"),
+  price: z.number().min(0, "O preço é obrigatório"),
+  image: z.string().url("A imagem deve ser uma URL válida").optional(),
+  description: z.string().min(1, "A descrição é obrigatória"),
+});
+
+export default function AdminPage() {
+  const [burgers, setBurgers] = useState<Burger[]>([]);
+  const [form, setForm] = useState<Burger>({
+    name: "",
+    price: 0,
+    image: "",
+    description: "",
+    id: "",
+  });
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchBurgers();
+  }, []);
+
+  async function fetchBurgers() {
+    const res = await fetch("/api/burgers");
+    const data = await res.json();
+    setBurgers(data);
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setErrors({});
+
+    const validation = burgerSchema.safeParse(form);
+    if (!validation.success) {
+      setErrors(validation.error.flatten().fieldErrors);
+      return;
+    }
+
+    setLoading(true);
+    await fetch("/api/burgers", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
+
+    setForm({ name: "", price: 0, image: "", description: "", id: "" });
+    setLoading(false);
+    fetchBurgers();
+  }
+
+  async function handleDelete(id: string) {
+    if (!confirm("Tem certeza que deseja excluir este hambúrguer?")) return;
+    await fetch(`/api/burgers/${id}`, { method: "DELETE" });
+    fetchBurgers();
+  }
+
+  return (
+    <div className="p-4 max-w-3xl mx-auto">
+      <h1 className="text-2xl font-bold">Painel de Administração</h1>
+
+      <form onSubmit={handleSubmit} className="mt-4 space-y-2">
+        <input
+          type="text"
+          placeholder="Nome"
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+          className="w-full p-2 border rounded"
+          required
+        />
+        {errors.name && (
+          <p className="text-red-500 text-sm">{errors.name[0]}</p>
+        )}
+
+        <input
+          type="number"
+          placeholder="Preço"
+          value={form.price === 0 ? "" : form.price}
+          onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
+          className="w-full p-2 border rounded"
+          required
+        />
+        {errors.price && (
+          <p className="text-red-500 text-sm">{errors.price[0]}</p>
+        )}
+
+        <input
+          type="text"
+          placeholder="URL da Imagem"
+          value={form.image}
+          onChange={(e) => setForm({ ...form, image: e.target.value })}
+          className="w-full p-2 border rounded"
+        />
+        {errors.image && (
+          <p className="text-red-500 text-sm">{errors.image[0]}</p>
+        )}
+
+        <textarea
+          placeholder="Descrição"
+          value={form.description}
+          onChange={(e) => setForm({ ...form, description: e.target.value })}
+          className="w-full p-2 border rounded"
+          required
+        ></textarea>
+        {errors.description && (
+          <p className="text-red-500 text-sm">{errors.description[0]}</p>
+        )}
+
+        <button
+          type="submit"
+          className="w-full p-2 bg-blue-500 text-white rounded"
+          disabled={loading}
+        >
+          {loading ? "Adicionando..." : "Adicionar Hambúrguer"}
+        </button>
+      </form>
+
+      <h2 className="text-xl font-semibold mt-6">Hambúrgueres Cadastrados</h2>
+      <div className="mt-4 space-y-2">
+        {burgers.map((burger) => (
+          <div
+            key={burger.id}
+            className="flex items-center justify-between p-2 border rounded"
+          >
+            <div>
+              <p className="font-semibold">{burger.name}</p>
+              <p className="text-sm text-gray-600">R$ {burger.price}</p>
+            </div>
+            <button
+              onClick={() => handleDelete(burger.id)}
+              className="px-3 py-1 bg-red-500 text-white rounded"
+            >
+              Excluir
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
