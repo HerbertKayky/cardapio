@@ -4,6 +4,7 @@ import { useCart } from "@/context/CartContext";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function CartPage() {
   const {
@@ -14,6 +15,8 @@ export default function CartPage() {
     decreaseQuantity,
   } = useCart();
   const router = useRouter();
+
+  const [observation, setObservation] = useState("");
 
   const totalPrice = cart.reduce(
     (acc, item) => acc + item.price * item.quantity,
@@ -79,6 +82,16 @@ export default function CartPage() {
               </button>
             </div>
           ))}
+          <div className="mt-4">
+            <label className="font-bold">
+              Observação:
+              <textarea
+                value={observation}
+                onChange={(e) => setObservation(e.target.value)}
+                className="w-full p-2 border rounded-md mt-1 font-medium"
+              />
+            </label>
+          </div>
           <div className="mt-4 text-right font-bold text-lg">
             Total: R$ {totalPrice}
           </div>
