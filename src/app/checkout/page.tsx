@@ -37,7 +37,7 @@ export default function CheckoutPage() {
 
     const { orderId } = await response.json();
 
-    router.push(`/payment?orderId=${orderId}`);
+    router.push(`/payment?orderId=${orderId}&observation=${encodeURIComponent(observation)}`);
   };
 
   return (
