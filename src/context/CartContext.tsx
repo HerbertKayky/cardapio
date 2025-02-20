@@ -3,20 +3,20 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 interface CartItem {
-  id: number;
+  id: string;
   name: string;
   price: number;
-  image: string;
+  image?: string;
   quantity: number;
 }
 
 interface CartContextType {
   cart: CartItem[];
   addToCart: (item: CartItem) => void;
-  removeFromCart: (id: number) => void;
+  removeFromCart: (id: string) => void;
   clearCart: () => void;
-  increaseQuantity: (id: number) => void;
-  decreaseQuantity: (id: number) => void;
+  increaseQuantity: (id: string) => void;
+  decreaseQuantity: (id: string) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -51,7 +51,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const removeFromCart = (id: number) => {
+  const removeFromCart = (id: string) => {
     setCart((prevCart) => prevCart.filter((item) => item.id !== id));
   };
 
@@ -59,7 +59,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setCart([]);
   };
 
-  const increaseQuantity = (id: number) => {
+  const increaseQuantity = (id: string) => {
     setCart((prevCart) =>
       prevCart.map((item) =>
         item.id === id ? { ...item, quantity: item.quantity + 1 } : item
@@ -67,7 +67,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const decreaseQuantity = (id: number) => {
+  const decreaseQuantity = (id: string) => {
     setCart((prevCart) =>
       prevCart.map((item) =>
         item.id === id
