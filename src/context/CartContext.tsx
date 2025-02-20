@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 
 interface CartItem {
   id: string;
@@ -12,30 +18,37 @@ interface CartItem {
 
 interface CartContextType {
   cart: CartItem[];
+  observation: string;
   addToCart: (item: CartItem) => void;
   removeFromCart: (id: string) => void;
   clearCart: () => void;
   increaseQuantity: (id: string) => void;
   decreaseQuantity: (id: string) => void;
+  setObservation: (obs: string) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [observation, setObservation] = useState("");
 
-  // Carregar carrinho do localStorage quando a aplicação inicia
+  // Carregar carrinho e observação do localStorage ao iniciar
   useEffect(() => {
     const storedCart = localStorage.getItem("cart");
-    if (storedCart) {
-      setCart(JSON.parse(storedCart));
-    }
+    const storedObservation = localStorage.getItem("observation");
+    if (storedCart) setCart(JSON.parse(storedCart));
+    if (storedObservation) setObservation(storedObservation);
   }, []);
 
-  // Salvar carrinho no localStorage sempre que mudar
+  // Salvar carrinho e observação no localStorage ao mudar
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
+
+  useEffect(() => {
+    localStorage.setItem("observation", observation);
+  }, [observation]);
 
   const addToCart = (item: CartItem) => {
     setCart((prevCart) => {
@@ -57,6 +70,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const clearCart = () => {
     setCart([]);
+    setObservation(""); // Resetar observação ao limpar o carrinho
   };
 
   const increaseQuantity = (id: string) => {
@@ -78,7 +92,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart, increaseQuantity, decreaseQuantity }}>
+    <CartContext.Provider
+      value={{
+        cart,
+        observation,
+        addToCart,
+        removeFromCart,
+        clearCart,
+        increaseQuantity,
+        decreaseQuantity,
+        setObservation,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );
