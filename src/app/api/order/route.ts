@@ -58,10 +58,16 @@ export async function GET(req: NextRequest) {
           },
         },
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
 
     return NextResponse.json(orders);
   } catch (error) {
-    return NextResponse.json({ error: "Erro ao buscar pedidos." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Erro ao buscar pedidos." },
+      { status: 500 }
+    );
   }
 }
