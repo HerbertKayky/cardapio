@@ -13,6 +13,7 @@ const burgerSchema = z.object({
 
 export default function AdminPage() {
   const [burgers, setBurgers] = useState<Burger[]>([]);
+  const [orders, setOrders] = useState<any[]>([]); // Estado para armazenar os pedidos
   const [form, setForm] = useState<Burger>({
     name: "",
     price: 0,
@@ -25,12 +26,21 @@ export default function AdminPage() {
 
   useEffect(() => {
     fetchBurgers();
+    fetchOrders(); // Chama a função para buscar pedidos
   }, []);
 
+  // Função para buscar hambúrgueres
   async function fetchBurgers() {
     const res = await fetch("/api/burgers");
     const data = await res.json();
     setBurgers(data);
+  }
+
+  // Função para buscar pedidos
+  async function fetchOrders() {
+    const res = await fetch("/api/order");
+    const data = await res.json();
+    setOrders(data); // Armazena os pedidos no estado
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -140,6 +150,39 @@ export default function AdminPage() {
             </button>
           </div>
         ))}
+      </div>
+
+      {/* Seção de pedidos */}
+      <h2 className="text-xl font-semibold mt-6">Pedidos Recentes</h2>
+      <div className="mt-4 space-y-2">
+        {orders.length === 0 ? (
+          <p className="text-gray-500">Nenhum pedido realizado ainda.</p>
+        ) : (
+          orders.map((order) => (
+            <div key={order.id} className="flex flex-col p-4 border rounded">
+              <h3 className="font-semibold">Pedido #{order.id}</h3>
+              <p>
+                <strong>Telefone:</strong> {order.user?.phone}
+              </p>
+              <p>
+                <strong>Total:</strong> R$ {order.total}
+              </p>
+              <p>
+                <strong>Observação:</strong> {order.observation || "Nenhuma"}
+              </p>
+
+              <h4 className="mt-2 font-semibold">Itens</h4>
+              {order.items.map((item: any) => (
+                <div key={item.id} className="flex justify-between">
+                  <span>
+                    {item.product.name} x {item.quantity}
+                  </span>
+                  <span>R$ {item.price}</span>
+                </div>
+              ))}
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
