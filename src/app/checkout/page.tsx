@@ -2,23 +2,42 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useCart } from "@/context/CartContext";
 
 export default function CheckoutPage() {
   const router = useRouter();
+
   const [name, setName] = useState("");
-  const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
 
-  const handleConfirmOrder = () => {
-    if (!name || !lastName || !phone) {
+  const { cart, observation } = useCart();
+
+  const handleConfirmOrder = async () => {
+    if (!name || !phone) {
       alert("Por favor, preencha todos os campos.");
       return;
     }
 
-    const whatsappMessage = `Olá! Meu nome é ${name} ${lastName} e gostaria de confirmar meu pedido. Meu WhatsApp é ${phone}.`;
-    const whatsappUrl = `https://wa.me/8193296809?text=${encodeURIComponent(whatsappMessage)}`;
+    const response = await fetch("/api/order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        phone,
+        items: cart.map((item) => ({
+          id: item.id,
+          quantity: item.quantity,
+          name: item.name,
+          price: item.price,
+        })),
+        total: cart.reduce((acc, item) => acc + item.price * item.quantity, 0),
+        observation,
+      }),
+    });
 
-    window.location.href = whatsappUrl;
+    const { orderId } = await response.json();
+
+    router.push(`/payment?orderId=${orderId}`);
   };
 
   return (
@@ -28,18 +47,12 @@ export default function CheckoutPage() {
       <div className="space-y-3">
         <input
           type="text"
-          placeholder="Nome"
+          placeholder="Nome e Sobrenome"
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="w-full px-3 py-2 border rounded-md"
         />
-        <input
-          type="text"
-          placeholder="Sobrenome"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          className="w-full px-3 py-2 border rounded-md"
-        />
+
         <input
           type="tel"
           placeholder="Número do WhatsApp"
@@ -47,11 +60,12 @@ export default function CheckoutPage() {
           onChange={(e) => setPhone(e.target.value)}
           className="w-full px-3 py-2 border rounded-md"
         />
+
         <button
           onClick={handleConfirmOrder}
           className="w-full px-4 py-2 bg-green-500 text-white rounded-md"
         >
-          Confirmar Pedido via WhatsApp
+          Prosseguir para Pagamento
         </button>
       </div>
 
