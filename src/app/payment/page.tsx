@@ -1,7 +1,7 @@
 "use client";
 
 import { useCart } from "@/context/CartContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function PaymentPage() {
@@ -12,6 +12,16 @@ export default function PaymentPage() {
     (acc, item) => acc + item.price * item.quantity,
     0
   );
+
+  const [observation, setObservation] = useState<string | null>("");
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const obs = urlParams.get("observation");
+    if (obs) {
+      setObservation(decodeURIComponent(obs));
+    }
+  }, []);
 
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
 
@@ -25,21 +35,35 @@ export default function PaymentPage() {
       <h1 className="text-2xl font-bold mb-4">Resumo do Pedido</h1>
 
       <div className="space-y-3">
-        <p><strong>Itens:</strong></p>
+        <p>
+          <strong>Itens:</strong>
+        </p>
         {cart.map((item) => (
-          <p key={item.id}>{item.name} - {item.quantity} x R${item.price}</p>
+          <p key={item.id}>
+            {item.name} - {item.quantity} x R${item.price}
+          </p>
         ))}
         <p className="font-semibold text-xl">Total: R$ {totalPrice}</p>
 
         <div className="mt-4">
-          <p><strong>Chave PIX para pagamento:</strong></p>
+          <p>
+            <strong>Chave PIX para pagamento:</strong>
+          </p>
           <p className="text-xl font-bold">12345678901@pix.com.br</p>
         </div>
 
         <div className="mt-4">
           <p>Por favor, realize o pagamento via PIX usando a chave acima.</p>
-          <p>Após o pagamento, clique no botão abaixo para confirmar o pagamento.</p>
+          <p>
+            Após o pagamento, clique no botão abaixo para confirmar o pagamento.
+          </p>
         </div>
+
+        {observation && (
+          <div className="mt-4">
+            <p className="font-bold">Obseração: {observation}</p>
+          </div>
+        )}
 
         <button
           onClick={handlePaymentConfirmation}
@@ -49,7 +73,9 @@ export default function PaymentPage() {
         </button>
 
         {paymentConfirmed && (
-          <p className="mt-4 text-green-600">Pagamento confirmado! Seu pedido está sendo processado.</p>
+          <p className="mt-4 text-green-600">
+            Pagamento confirmado! Seu pedido está sendo processado.
+          </p>
         )}
       </div>
 
