@@ -24,14 +24,20 @@ model Product {
 }
 
 model Order {
-  id        String      @id @default(uuid())
-  user      User        @relation(fields: [userId], references: [id])
-  userId    String
-  items     OrderItem[]
-  total     Decimal @db.Decimal(10,2)
-  status    String      @default("pending") 
-  createdAt DateTime    @default(now())
-  observation String? 
+  id          String      @id @default(uuid())
+  user        User        @relation(fields: [userId], references: [id])
+  userId      String
+  items       OrderItem[]
+  total       Decimal @db.Decimal(10,2)
+  status      String      @default("pending") 
+  createdAt   DateTime    @default(now())
+  observation String?
+  
+  // Novo campo para armazenar o comprovante de pagamento
+  proofUrl    String?    
+
+  // Novo campo para definir quando o comprovante expira (24 horas após o upload)
+  expiresAt   DateTime?   
 }
 
 model OrderItem {
