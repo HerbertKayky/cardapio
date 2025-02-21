@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 export default function PaymentPage() {
   const { cart } = useCart();
   const router = useRouter();
+  const orderId = new URLSearchParams(window.location.search).get("orderId");
 
   const totalPrice = cart.reduce(
     (acc, item) => acc + item.price * item.quantity,
@@ -35,13 +36,14 @@ export default function PaymentPage() {
   };
 
   const handlePaymentConfirmation = async () => {
-    if (!proofile) {
+    if (!proofile || !orderId) {
       alert("Por favor, envie o comprovante de pagamento.");
       return;
     }
 
     const formData = new FormData();
     formData.append("file", proofile);
+    formData.append("orderId", orderId);
 
     const response = await fetch("/api/upload", {
       method: "POST",
