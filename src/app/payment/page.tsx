@@ -13,7 +13,10 @@ export default function PaymentPage() {
     0
   );
 
+  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const [observation, setObservation] = useState<string | null>("");
+  const [proofile, setProofile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -23,11 +26,33 @@ export default function PaymentPage() {
     }
   }, []);
 
-  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setProofile(file);
+      setPreview(URL.createObjectURL(file));
+    }
+  };
 
-  const handlePaymentConfirmation = () => {
-    setPaymentConfirmed(true);
-    // Aqui você pode enviar um pedido de confirmação de pagamento ou realizar outra ação.
+  const handlePaymentConfirmation = async () => {
+    if (!proofile) {
+      alert("Por favor, envie o comprovante de pagamento.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", proofile);
+
+    const response = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (response.ok) {
+      setPaymentConfirmed(true);
+    } else {
+      alert("Erro ao enviar o comprovante de pagamento. Tente novamente.");
+    }
   };
 
   return (
@@ -64,6 +89,17 @@ export default function PaymentPage() {
             <p className="font-bold">Obseração: {observation}</p>
           </div>
         )}
+
+        <div className="mt-4">
+          <input type="file" accept="image/*" onChange={handleFileChange} />
+          {preview && (
+            <img
+              src={preview}
+              alt="Preview"
+              className="mt-2 w-ful h-auto max-h-64 object-contain"
+            />
+          )}
+        </div>
 
         <button
           onClick={handlePaymentConfirmation}
