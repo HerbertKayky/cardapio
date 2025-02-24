@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { boolean, string, z } from "zod";
+import { z } from "zod";
 import { Burger } from "@/utils/types";
 
 const burgerSchema = z.object({
@@ -87,11 +87,16 @@ export default function AdminPage() {
     fetchOrders();
   }
 
-  async function handleApproveOrder(id: string) {
+  async function handleApproveOrder(id: string, phone: string) {
     await fetch(`/api/order/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
     });
+    const message = encodeURIComponent(
+      `Olá! seu pedido foi confirmado e está sendo preparado. Em breve, ele será enviado. Obrigado por escolher nossa hamburgueria! 🍔🔥`
+    );
+    const whatappLink = `https://api.whatsapp.com/send?phone=${phone}&text=${message}`;
+    window.open(whatappLink, "_blank");
     fetchOrders();
   }
 
@@ -227,7 +232,9 @@ export default function AdminPage() {
               <div className="flex gap-2 mt-3">
                 {order.status !== "approved" && (
                   <button
-                    onClick={() => handleApproveOrder(order.id)}
+                    onClick={() =>
+                      handleApproveOrder(order.id, order.user.phone)
+                    }
                     className="px-3 py-1 bg-green-500 text-white rounded"
                   >
                     Confirmar Pagamento
