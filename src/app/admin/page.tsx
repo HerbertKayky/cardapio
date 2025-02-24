@@ -13,7 +13,7 @@ const burgerSchema = z.object({
 
 export default function AdminPage() {
   const [burgers, setBurgers] = useState<Burger[]>([]);
-  const [orders, setOrders] = useState<any[]>([]); // Estado para armazenar os pedidos
+  const [orders, setOrders] = useState<any[]>([]);
   const [form, setForm] = useState<Burger>({
     name: "",
     price: 0,
@@ -26,21 +26,19 @@ export default function AdminPage() {
 
   useEffect(() => {
     fetchBurgers();
-    fetchOrders(); // Chama a função para buscar pedidos
+    fetchOrders();
   }, []);
 
-  // Função para buscar hambúrgueres
   async function fetchBurgers() {
     const res = await fetch("/api/burgers");
     const data = await res.json();
     setBurgers(data);
   }
 
-  // Função para buscar pedidos
   async function fetchOrders() {
     const res = await fetch("/api/order");
     const data = await res.json();
-    setOrders(data); // Armazena os pedidos no estado
+    setOrders(data);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -69,6 +67,20 @@ export default function AdminPage() {
     if (!confirm("Tem certeza que deseja excluir este hambúrguer?")) return;
     await fetch(`/api/burgers/${id}`, { method: "DELETE" });
     fetchBurgers();
+  }
+
+  async function handleRemoveOrder(orderId: string) {
+    if (!confirm("Tem certeza que deseja remover este pedido?")) return;
+    await fetch(`/api/order/${orderId}`, { method: "DELETE" });
+    fetchOrders();
+  }
+
+  async function handleApproveOrder(id: string) {
+    await fetch(`/api/order/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+    });
+    fetchOrders();
   }
 
   return (
@@ -152,7 +164,6 @@ export default function AdminPage() {
         ))}
       </div>
 
-      {/* Seção de pedidos */}
       <h2 className="text-xl font-semibold mt-6">Pedidos Recentes</h2>
       <div className="mt-4 space-y-2">
         {orders.length === 0 ? (
@@ -180,6 +191,34 @@ export default function AdminPage() {
                   <span>R$ {item.price}</span>
                 </div>
               ))}
+
+              {order.proofUrl && (
+                <div className="mt-2">
+                  <h4 className="font-semibold">Comprovante</h4>
+                  <img
+                    src={order.proofUrl}
+                    className="max-h-64"
+                    alt="Comprovante"
+                  />
+                </div>
+              )}
+
+              <div className="flex gap-2 mt-4">
+                {order.status !== "approved" && (
+                  <button
+                    onClick={() => handleApproveOrder(order.id)}
+                    className="px-3 py-1 bg-green-500 text-white rounded"
+                  >
+                    Confirmar Pagamento
+                  </button>
+                )}
+                <button
+                  onClick={() => handleRemoveOrder(order.id)}
+                  className="px-3 py-1 bg-red-500 text-white rounded"
+                >
+                  Remover Pedido
+                </button>
+              </div>
             </div>
           ))
         )}
