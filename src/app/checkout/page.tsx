@@ -18,12 +18,19 @@ export default function CheckoutPage() {
       return;
     }
 
+    const formattedPhone = getFormattedPhoneForDB(phone);
+
+    if (formattedPhone.length !== 13) {
+      alert("Por favor, insira um número de telefone válido.");
+      return;
+    }
+
     const response = await fetch("/api/order", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name,
-        phone,
+        phone: formattedPhone,
         items: cart.map((item) => ({
           id: item.id,
           quantity: item.quantity,
@@ -37,8 +44,29 @@ export default function CheckoutPage() {
 
     const { orderId } = await response.json();
 
-    router.push(`/payment?orderId=${orderId}&observation=${encodeURIComponent(observation)}`);
+    router.push(
+      `/payment?orderId=${orderId}&observation=${encodeURIComponent(
+        observation
+      )}`
+    );
   };
+
+  function formatPhoneNumber(value: string) {
+    const cleaned = value.replace(/\D/g, "");
+
+    if (cleaned.length >= 11) {
+      return cleaned.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
+    } else if (cleaned.length >= 7) {
+      return cleaned.replace(/^(\d{2})(\d{1,4})(\d{0,4})$/, "($1) $2-$3");
+    } else if (cleaned.length >= 3) {
+      return cleaned.replace(/^(\d{2})(\d{1,4})$/, "($1) $2");
+    }
+    return cleaned;
+  }
+  function getFormattedPhoneForDB(value: string) {
+    const cleaned = value.replace(/\D/g, ""); // Remove não numéricos
+    return `55${cleaned}`; // Adiciona o código do Brasil
+  }
 
   return (
     <div className="p-4 max-w-lg mx-auto">
@@ -53,13 +81,18 @@ export default function CheckoutPage() {
           className="w-full px-3 py-2 border rounded-md"
         />
 
-        <input
-          type="tel"
-          placeholder="Número do WhatsApp"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          className="w-full px-3 py-2 border rounded-md"
-        />
+        <div className="relative">
+          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+            +55
+          </span>
+          <input
+            type="tel"
+            placeholder="(DDD) 9XXXX-XXXX"
+            value={phone}
+            onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
+            className="w-full px-12 py-2 border rounded-md focus:ring-2 focus:ring-green-500 focus:outline-none"
+          />
+        </div>
 
         <button
           onClick={handleConfirmOrder}
