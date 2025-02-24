@@ -23,28 +23,22 @@ export async function POST(req: NextRequest) {
     const buffer = Buffer.from(await file.arrayBuffer());
     const uploadDir = path.join(process.cwd(), "public/uploads");
 
-    // Criar diretório se não existir
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
 
-    const filePath = path.join(uploadDir, file.name);
+    const fileName = `${orderId}-${Date.now()}-${file.name}`;
+    const filePath = path.join(uploadDir, fileName);
     await writeFile(filePath, buffer);
-
-    const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 24);
 
     await prisma.order.update({
       where: { id: orderId.toString() },
-      data: {
-        proofUrl: `/uploads/${file.name}`,
-        expiresAt,
-      },
+      data: { proofUrl: `/uploads/${fileName}` },
     });
 
     return NextResponse.json({
       message: "Comprovante enviado com sucesso!",
-      url: `/uploads/${file.name}`,
+      url: `/uploads/${fileName}`,
     });
   } catch (error) {
     return NextResponse.json(
