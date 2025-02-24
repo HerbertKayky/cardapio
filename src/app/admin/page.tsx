@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { z } from "zod";
+import { boolean, string, z } from "zod";
 import { Burger } from "@/utils/types";
 
 const burgerSchema = z.object({
@@ -23,6 +23,14 @@ export default function AdminPage() {
   });
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [loading, setLoading] = useState(false);
+
+  const [proofModal, setProofModal] = useState<{
+    open: boolean;
+    url: string | null;
+  }>({
+    open: false,
+    url: null,
+  });
 
   const SkeletonBox = () => (
     <div className="animate-pulse p-4 border rounded bg-gray-200 h-16"></div>
@@ -204,17 +212,19 @@ export default function AdminPage() {
               ))}
 
               {order.proofUrl && (
-                <div className="mt-2">
-                  <h4 className="font-semibold">Comprovante</h4>
-                  <img
-                    src={order.proofUrl}
-                    className="max-h-64"
-                    alt="Comprovante"
-                  />
+                <div className="mt-3">
+                  <button
+                    className="px-3 py-1 bg-blue-500 text-white rounded"
+                    onClick={() =>
+                      setProofModal({ open: true, url: order.proofUrl })
+                    }
+                  >
+                    Ver comprovante
+                  </button>
                 </div>
               )}
 
-              <div className="flex gap-2 mt-4">
+              <div className="flex gap-2 mt-3">
                 {order.status !== "approved" && (
                   <button
                     onClick={() => handleApproveOrder(order.id)}
@@ -232,6 +242,24 @@ export default function AdminPage() {
               </div>
             </div>
           ))
+        )}
+        {proofModal.open && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-gray-300 p-4 rounded-lg shadow-lg max-w-sm">
+              <h2 className="text-lg font-semibold mb-2">Comprovante</h2>
+              <img
+                src={proofModal.url || ""}
+                className="w-full rounded-lg"
+                alt="Comprovante"
+              />
+              <button
+                className="mt-4 w-full py-2 bg-red-500 text-white rounded"
+                onClick={() => setProofModal({ open: false, url: null })}
+              >
+                Fechar
+              </button>
+            </div>
+          </div>
         )}
       </div>
     </div>
