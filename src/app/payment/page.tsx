@@ -112,7 +112,7 @@ export default function PaymentPage() {
 
         {paymentConfirmed && (
           <p className="mt-4 text-green-600">
-            Pagamento confirmado! Seu pedido está sendo processado.
+            Pagamento em análise. Logo mais você será informado no WhatsApp.
           </p>
         )}
       </div>
