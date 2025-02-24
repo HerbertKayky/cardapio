@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { z } from "zod";
 import { Burger } from "@/utils/types";
+import Link from "next/link";
 
 const burgerSchema = z.object({
   name: z.string().min(1, "O nome é obrigatório"),
@@ -95,8 +96,8 @@ export default function AdminPage() {
     const message = encodeURIComponent(
       `Olá! seu pedido foi confirmado e está sendo preparado. Em breve, ele será enviado. Obrigado por escolher nossa hamburgueria! 🍔🔥`
     );
-    const whatappLink = `https://api.whatsapp.com/send?phone=${phone}&text=${message}`;
-    window.open(whatappLink, "_blank");
+    const whatsappLink = `https://api.whatsapp.com/send?phone=${phone}&text=${message}`;
+    window.open(whatsappLink, "_blank");
     fetchOrders();
   }
 
@@ -197,7 +198,14 @@ export default function AdminPage() {
             <div key={order.id} className="flex flex-col p-4 border rounded">
               <h3 className="font-semibold">Pedido #{order.id}</h3>
               <p>
-                <strong>Telefone:</strong> {order.user?.phone}
+                <Link
+                  className=""
+                  target="_blank"
+                  href={`https://wa.me/${order.user.phone}`}
+                >
+                  <strong>Telefone:</strong>{" "}
+                  <span className="underline">{order.user.phone}</span>
+                </Link>
               </p>
               <p>
                 <strong>Total:</strong> R$ {order.total}
