@@ -24,6 +24,10 @@ export default function AdminPage() {
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [loading, setLoading] = useState(false);
 
+  const SkeletonBox = () => (
+    <div className="animate-pulse p-4 border rounded bg-gray-200 h-16"></div>
+  );
+
   useEffect(() => {
     fetchBurgers();
     fetchOrders();
@@ -145,6 +149,13 @@ export default function AdminPage() {
 
       <h2 className="text-xl font-semibold mt-6">Hambúrgueres Cadastrados</h2>
       <div className="mt-4 space-y-2">
+        {burgers.length === 0 && (
+          <>
+            <SkeletonBox />
+            <SkeletonBox />
+            <SkeletonBox />
+          </>
+        )}
         {burgers.map((burger) => (
           <div
             key={burger.id}
